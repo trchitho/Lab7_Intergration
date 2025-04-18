@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  order_service_b: # Đổi tên để tránh xung đột nếu chạy cùng lab khác
+    build: ./order-service
+    container_name: order_service_b
+    ports:
+      - "5000:5000" # Giữ port 5000
+    environment:
+      - INVENTORY_SERVICE_URL=http://inventory_service_b:5002
+    networks:
+      - labB-net
+    depends_on:
+      - inventory_service_b
+
+  inventory_service_b:
+    build: ./inventory-service
+    container_name: inventory_service_b
+    # Port 5002 không cần mở ra ngoài
+    networks:
+      - labB-net
+    depends_on:
+      - order_service_b
+
+networks:
+  labB-net:
+    driver: bridge
